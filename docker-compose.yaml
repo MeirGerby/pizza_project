@@ -55,8 +55,8 @@ services:
       - redis
       - mongodb
     build:
-      context: ./app
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./app/api/Dockerfile
     container_name: "app"
     restart: unless-stopped
     ports:
@@ -71,8 +71,8 @@ services:
       - mongodb
       - kafka
     build:
-      context: ./consumer_worker/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./app/consumer_worker/Dockerfile
     container_name: "consumer_worker"
     restart: unless-stopped
     environment:
@@ -89,8 +89,8 @@ services:
       - mongodb 
       - kafka
     build:
-      context: ./consumer_text/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: ./app/consumer_text/Dockerfile
     container_name: "consumer_text"
     restart: unless-stopped
     environment:
