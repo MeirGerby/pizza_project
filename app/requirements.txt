@@ -1,0 +1,11 @@
+anyio
+async-timeout
+fastapi
+pydantic
+python-dotenv
+requests
+urllib3
+uvicorn[standard]
+python-multipart
+pymongo
+confluent_kafka 
