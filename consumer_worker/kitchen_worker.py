@@ -3,8 +3,7 @@ import json
 from confluent_kafka import Consumer
 from db.mongodb_connection import get_collection
 from db.redis_connection import get_redis_connection 
-
-COLLECTION_NAME = 'orders'
+from core.config import settings
 
 
 def create_consumer():
@@ -19,7 +18,7 @@ def create_consumer():
 def get_data():
     consumer = create_consumer()
     consumer.subscribe(["pizza-orders"])
-    mongo_coll = get_collection(COLLECTION_NAME)
+    mongo_coll = get_collection(settings.COLLECTION_NAME)
     redis_connection = get_redis_connection()
     print("Consumer is running and subscribed to pizza-orders topic")
 

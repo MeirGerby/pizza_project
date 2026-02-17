@@ -1,5 +1,4 @@
 from pymongo import mongo_client
-import pymongo
 from core.config import settings
 
 def _connection():

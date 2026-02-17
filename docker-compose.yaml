@@ -21,17 +21,21 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
 
-      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs 
 
     volumes:
-      - kafka_kraft:/var/lib/kafka/data
+      - kafka_data:/var/lib/kafka/data 
+    networks:
+      - backend
 
   mongodb:
-    image: meirgerby/mongodb:1.0
+    image: mongo
     volumes:
-      - ./data/mongodb:/var/lib/mongodb
+      - mongodb_data:/var/lib/mongodb
     ports:
-      - '27017:27017'
+      - '27017:27017' 
+    networks:
+      - backend
 
   redis:
     image: redis:latest
@@ -40,24 +44,75 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./data/redis:/var/lib/redis
-    command: redis-server --requirepass ${REDIS_DEFAULT_PASS} 
+      - redis_data:/var/lib/redis
+    # command: redis-server --requirepass ${REDIS_DEFAULT_PASS} 
     env_file:
-      - .env
+      - .env 
+    networks:
+      - backend
   app:
     depends_on:
       - redis
+      - mongodb
     build:
-      context: .
+      context: ./app
       dockerfile: ./Dockerfile
     container_name: "app"
     restart: unless-stopped
     ports:
-      - "${APP_PORT}:8000"
+      - "8000:8000"
     volumes:
-      - ./data/app:/var/lib/app
+      - ./app:/app 
+    networks:
+      - backend
+  kitchen_worker:
+    depends_on:
+      - redis
+      - mongodb
+      - kafka
+    build:
+      context: ./consumer_worker/
+      dockerfile: ./Dockerfile
+    container_name: "consumer_worker"
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CLIENT_ID=kitchen_worker
+      - KAFKA_GROUP_ID=pizza-orders
+    volumes:
+      - ./:/app 
+    networks:
+      - backend
+  text_worker:
+    depends_on:
+      - redis
+      - mongodb 
+      - kafka
+    build:
+      context: ./consumer_text/
+      dockerfile: ./Dockerfile
+    container_name: "consumer_text"
+    restart: unless-stopped
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_CLIENT_ID=text_worker
+      - KAFKA_GROUP_ID=pizza-orders
+    volumes:
+      - ./:/app 
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
 
 volumes:
-  kafka_kraft:
+  mongodb_data:
+    driver: local
+  kafka_data:
+    driver: local
+  redis_data:
+    driver: local
+
 
 

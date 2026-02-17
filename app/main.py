@@ -1,5 +1,9 @@
-from routes.order import app 
+from routes.order_route import route as order_route
+from fastapi import FastAPI
 
+
+app = FastAPI(debug=True) 
+app.include_router(order_route)
 
 if __name__ == "__main__":
     import uvicorn
