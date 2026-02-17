@@ -4,7 +4,7 @@ from confluent_kafka import Producer
 
 def create_producer():
     PRODUCER_CONFIG = {
-        "bootstrap.servers": "localhost:9092"
+        "bootstrap.servers": "kafka:9092"
     }
 
     return Producer(PRODUCER_CONFIG)  # type: ignore
@@ -13,7 +13,7 @@ def delivery_report(err, msg):
     if err:
         return f"Delivery failed: {err}"
     else:
-        return f"Delivered {msg.value().decode("utf-8")}"
+        return f"Delivered {msg.value().decode('utf-8')}"
 
         
 

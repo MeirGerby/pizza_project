@@ -8,7 +8,7 @@ from core.config import settings
 
 def create_consumer():
     CONSUMER_CONFIG = {
-        "bootstrap.servers": "localhost:9092",
+        "bootstrap.servers": "kafka:9092",
         "group.id": "kitchen-team",
         "auto.offset.reset": "earliest"
     }
